@@ -13,6 +13,7 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
+# include <stdbool.h>
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -54,7 +55,9 @@ typedef struct simulation
 	long				start_time_ms;
 	bool				should_stop; // Shared flag
 	pthread_mutex_t		stop_lock;
-	pthread_mutex_t		;
+	pthread_mutex_t		log_lock;
 }	t_simulation;
+
+char	**verify_args(int argc, char **argv);
 
 #endif

@@ -21,6 +21,7 @@ NAME    := codexion
 # Mandatory part sources
 # --------------------------------------------------------------------------- #
 SRCS    := src/main.c \
+		   src/parser.c \
 
 OBJS    := $(SRCS:.c=.o)
 

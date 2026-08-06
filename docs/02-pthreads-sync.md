@@ -1,5 +1,87 @@
 # 🧵 POSIX Threads: Creation, Joining & Synchronization
 
+## 🧠 Thread vs Mutex — the core difference
+
+These are two completely different tools that work **together**, not in place of
+each other. Mixing them up is the #1 source of confusion when starting out.
+
+**Thread — a line of execution.** It's literally code running. Creating a thread
+means you now have another "copy" of your program running independently, in
+parallel with everything else.
+
+```c
+pthread_create(&thread, NULL, coder_routine, &coder_data);
+```
+
+**Mutex — a lock.** It doesn't make anything run — it **blocks access**. It's a
+tool to stop two threads from touching the same thing at the same time.
+
+```c
+pthread_mutex_lock(&dongle->lock);
+// only ONE thread at a time can be past this point
+dongle->is_available = false;
+pthread_mutex_unlock(&dongle->lock);
+```
+
+If thread A already holds the lock and thread B calls `pthread_mutex_lock` on the
+same mutex, **thread B blocks (waits)** until thread A calls `unlock`.
+
+### The simplest analogy
+
+| Concept | Analogy |
+|---|---|
+| **Thread** | A person working |
+| **Mutex** | A bathroom with a single key |
+| **Shared resource** (`is_available`, `should_stop`, `stdout`) | The bathroom itself |
+
+5 people (threads) share one office. There's only one bathroom (shared resource).
+Without a key (mutex), two people could try to enter at once and collide. With the
+key: whoever arrives first locks the door, uses it, leaves, and only then can the
+next person get in.
+
+### Why you always need both together
+
+- **Threads without a mutex** = chaos. Multiple threads reading/writing the same
+  variable at once = **race condition** (unpredictable outcome, bugs that are
+  nearly impossible to reproduce)
+- **A mutex without threads** = pointless. A mutex only matters when there's more
+  than one line of execution competing for the same resource
+
+### How this shows up in `codexion.h`
+
+```c
+typedef struct dongle
+{
+	...
+	bool				is_available;   // the shared RESOURCE
+	pthread_mutex_t		lock;           // the LOCK protecting it
+}	t_dongle;
+
+typedef struct coder
+{
+	...
+	pthread_t			thread;         // the PERSON (line of execution)
+	...
+}	t_coder;
+
+typedef struct simulation
+{
+	...
+	bool				should_stop;    // another shared RESOURCE
+	pthread_mutex_t		stop_lock;      // another LOCK
+	pthread_mutex_t		log_lock;       // lock for printf
+}	t_simulation;
+```
+
+Notice the pattern: **every piece of data shared between threads has its own
+mutex sitting next to it.** That's the golden rule — if more than one thread can
+touch a field, it needs a lock.
+
+**One thing a mutex does NOT do:** it doesn't let a thread wait *efficiently* for
+a state change — it only blocks for a brief moment of access. If a coder needs to
+wait until a dongle actually becomes free (not just peek at its state once), that's
+what condition variables are for — see the section below.
+
 ## 📖 Why threads need synchronization
 
 When multiple threads read/write shared data (like a dongle's "available" state)
