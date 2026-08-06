@@ -15,7 +15,7 @@
 int	main(int argc, char **argv)
 {
 	if (verify_args(argc, argv) == NULL)
-		printf("ERROR: Invalid arguments.");
+		printf("ERROR: Invalid arguments.\n");
 	else
-		printf("Success");
+		printf("Success.\n");
 }
