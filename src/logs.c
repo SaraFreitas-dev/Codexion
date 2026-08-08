@@ -24,3 +24,4 @@ static const char	*get_event_str(t_event event)
 
 	return (event_strings[event]);
 }
+
