@@ -58,6 +58,15 @@ typedef struct simulation
 	pthread_mutex_t		log_lock;
 }	t_simulation;
 
+typedef enum event_type
+{
+	DONGLE_TAKEN,
+	COMPILING,
+	DEBUGGING,
+	REFACTORING,
+	BURNED_OUT
+}	t_event;
+
 char	**verify_args(int argc, char **argv);
 
 #endif

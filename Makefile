@@ -45,7 +45,7 @@ test: all
 	@echo "🚀 Running full test suite..."
 	@echo ""
 	@echo "🔍 [1/3] Norm check..."
-	@if norminette src/*.c src/*.h > /tmp/norm.log 2>&1; then \
+	@if norminette src/*.c includes/*.h > /tmp/norm.log 2>&1; then \
 		echo "✅ Norm OK"; \
 	else \
 		echo "❌ Norm errors:"; cat /tmp/norm.log; \

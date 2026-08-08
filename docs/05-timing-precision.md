@@ -20,6 +20,68 @@ The subject explicitly says real-time measurement via `gettimeofday()` is fine h
 for simplicity — this isn't a project about squeezing out nanosecond accuracy, it's
 about **correct logic** with reasonable timing.
 
+### What `gettimeofday()` actually gives you
+
+It doesn't hand you a single number — it fills a `struct timeval` with **two**
+separate fields:
+
+```c
+struct timeval
+{
+	time_t      tv_sec;    // whole seconds since Jan 1, 1970
+	suseconds_t tv_usec;   // microseconds within that second (0-999999)
+};
+```
+
+```c
+struct timeval tv;
+
+gettimeofday(&tv, NULL);
+```
+
+You can't subtract two `struct timeval` directly, and you can't log `tv_sec` and
+`tv_usec` separately and expect it to match the subject's `timestamp_in_ms` format —
+you need to **convert both fields into a single number of milliseconds first**:
+
+```c
+long	now_ms;
+
+now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+```
+
+- `tv_sec * 1000` — turns whole seconds into milliseconds
+- `tv_usec / 1000` — turns the leftover microseconds into milliseconds (integer
+  division drops anything below 1ms, which is fine at this precision)
+
+### Getting a timestamp relative to simulation start
+
+The subject's example log starts at `0`, not at some huge epoch number like
+`1754582400000` — that means every timestamp you print is **relative to when the
+simulation began**, not the absolute system clock.
+
+The pattern is always the same, everywhere in the program:
+1. **Once**, at the very start of `main` (or wherever you initialize `t_simulation`),
+   call `gettimeofday()` and convert it to `start_time_ms` using the formula above —
+   store that value in the shared struct
+2. **Every time** you need "the current timestamp" for a log line, call
+   `gettimeofday()` again, convert it the same way, and **subtract** the stored
+   `start_time_ms`
+
+```c
+long	elapsed_ms;
+
+elapsed_ms = now_ms - simul->start_time_ms;
+```
+
+That `elapsed_ms` is exactly the `timestamp_in_ms` the subject wants printed —
+`0` right at the start, `201` two hundred-and-one milliseconds later, and so on.
+
+**Common mistake:** forgetting to convert `tv_sec`/`tv_usec` into the *same* unit
+before subtracting, or mixing a value computed with `gettimeofday()` against one
+computed with `clock_gettime()` somewhere else — the two clocks aren't guaranteed
+to agree on the same "zero point," so subtracting one from the other gives garbage.
+Pick one function, use it everywhere, always convert to milliseconds the same way.
+
 ## 💤 `usleep()` and its limits
 
 `usleep(microseconds)` suspends a thread for **at least** the given time — the OS
