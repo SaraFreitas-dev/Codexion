@@ -43,17 +43,17 @@ typedef struct coder
 typedef struct simulation
 {
 	int					number_of_coders;
-	int					time_to_compile;
 	int					time_to_burnout;
-	int					dongle_cooldown;
+	int					time_to_compile;
 	int					time_to_debug;
 	int					time_to_refactor;
 	int					number_of_compiles_required;
+	int					dongle_cooldown;
 	char				*scheduler;
-	t_coder				*coders;
-	t_dongle			*dongles;
 	long				start_time_ms;
 	bool				should_stop; // Shared flag
+	t_dongle			*dongles;
+	t_coder				*coders;
 	pthread_mutex_t		stop_lock;
 	pthread_mutex_t		log_lock;
 }	t_simulation;
@@ -71,10 +71,13 @@ typedef enum event_type
 //_____________________PARSER.C_____________________
 char	**verify_args(int argc, char **argv);
 
-//_____________________UTILS.C______________________
-long	get_time_ms(void);
-
 //______________________LOG.C_______________________
 void	print_log(t_simulation *simul, t_coder *coder, t_event event);
+
+//______________________INIT.C_______________________
+int		init_simulation(t_simulation *simul, char **args);
+
+//_____________________UTILS.C______________________
+long	get_time_ms(void);
 
 #endif
