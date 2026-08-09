@@ -22,6 +22,7 @@ NAME    := codexion
 # --------------------------------------------------------------------------- #
 SRCS    := src/main.c \
 		   src/parser.c \
+		   src/logs.c \
 
 OBJS    := $(SRCS:.c=.o)
 

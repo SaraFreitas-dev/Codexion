@@ -64,9 +64,17 @@ typedef enum event_type
 	COMPILING,
 	DEBUGGING,
 	REFACTORING,
-	BURNED_OUT
+	BURNED_OUT,
+	EVENT_COUNT
 }	t_event;
 
+//_____________________PARSER.C_____________________
 char	**verify_args(int argc, char **argv);
+
+//_____________________UTILS.C______________________
+long	get_time_ms(void);
+
+//______________________LOG.C_______________________
+void	print_log(t_simulation *simul, t_coder *coder, t_event event);
 
 #endif

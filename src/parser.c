@@ -25,7 +25,8 @@ int	is_within_int_range(char *str)
 		value = value * 10 + (str[i] - '0');
 		if (value > 2147483647)
 		{
-			printf("ARGUMENT ERROR: A value exceeds the INT_MAX limits.\n");
+			fprintf(stderr, "ARGUMENT ERROR: A value exceeds "
+				"the INT_MAX limits.\n");
 			return (0);
 		}
 		i++;
@@ -53,7 +54,8 @@ int	has_valid_numbers(int argc, char **argv)
 			return (0);
 		if (atoi(argv[i]) == 0)
 		{
-			printf("ARGUMENT ERROR: Values need to be superior to zero.\n");
+			fprintf(stderr, "ARGUMENT ERROR: Values need to be "
+				"superior to zero.\n");
 			return (0);
 		}
 		i++;
@@ -65,7 +67,7 @@ int	has_valid_scheduler(char *str)
 {
 	if ((strcmp(str, "fifo") == 0) || (strcmp(str, "edf") == 0))
 		return (1);
-	printf("ARGUMENT ERROR: Invalid scheduler.\n");
+	fprintf(stderr, "ARGUMENT ERROR: Invalid scheduler.\n");
 	return (0);
 }
 
