@@ -76,6 +76,7 @@ void	print_log(t_simulation *simul, t_coder *coder, t_event event);
 
 //______________________INIT.C_______________________
 int		init_simulation(t_simulation *simul, char **args);
+void	cleanup_simulation(t_simulation *simul);
 
 //_____________________UTILS.C______________________
 long	get_time_ms(void);

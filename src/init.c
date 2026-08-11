@@ -13,33 +13,6 @@
 #include "codexion.h"
 
 /*
-At this point, the arguments have been parsed and verified,
-So they just need to be assigned on the t_simulation.
-No malloc needed here: t_simulation is passed by pointer
-to an already-existing struct in main
-*/
-int	init_simulation(t_simulation *simul, char **args)
-{
-	simul->number_of_coders = atoi(args[1]);
-	simul->time_to_burnout = atoi(args[2]);
-	simul->time_to_compile = atoi(args[3]);
-	simul->time_to_debug = atoi(args[4]);
-	simul->time_to_refactor = atoi(args[5]);
-	simul->number_of_compiles_required = atoi(args[6]);
-	simul->dongle_cooldown = atoi(args[7]);
-	simul->scheduler = args[8];
-	simul->start_time_ms = get_time_ms();
-	simul->should_stop = false;
-	if (init_dongles(simul) == 1)
-		return (1);
-	if (init_coders(simul) == 1)
-		return (1);
-	if (init_mutex(simul) == 1)
-		return (1);
-	return (0);
-}
-
-/*
 Fill each dongle's data. Keeping in mind the subject rule:
 "There is one dongle between each pair of coders.
 Therefore, if there are several coders, each coder has a dongle
@@ -108,22 +81,49 @@ int	init_coders(t_simulation *simul)
 	return (0);
 }
 
-int	init_mutex(t_simulation *simul)
-{
-
-}
 /*
-
-typedef struct dongle
-{
-	int					dongle_id;
-	bool				is_available;
-	long				released_at_ms; // For the cooldown
-	pthread_mutex_t		lock;
-}	t_dongle;
-
-pthread_mutex_init → log_lock + stop_lock
-init_dongles       → malloc + loop
-init_coders        → malloc + loop
-cleanup_simulation → free + destroy mutexes
+At this point, the arguments have been parsed and verified,
+So they just need to be assigned on the t_simulation.
+No malloc needed here: t_simulation is passed by pointer
+to an already-existing struct in main
 */
+int	init_simulation(t_simulation *simul, char **args)
+{
+	simul->number_of_coders = atoi(args[1]);
+	simul->time_to_burnout = atoi(args[2]);
+	simul->time_to_compile = atoi(args[3]);
+	simul->time_to_debug = atoi(args[4]);
+	simul->time_to_refactor = atoi(args[5]);
+	simul->number_of_compiles_required = atoi(args[6]);
+	simul->dongle_cooldown = atoi(args[7]);
+	simul->scheduler = args[8];
+	simul->start_time_ms = get_time_ms();
+	simul->should_stop = false;
+	if (init_dongles(simul) == 1)
+		return (1);
+	if (init_coders(simul) == 1)
+		return (1);
+	if (pthread_mutex_init(&simul->log_lock, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&simul->stop_lock, NULL) != 0)
+		return (1);
+	return (0);
+}
+
+void	cleanup_simulation(t_simulation *simul)
+{
+	int			id;
+	t_dongle	*dongle;
+
+	id = 0;
+	while (id < simul->number_of_coders)
+	{
+		dongle = &simul->dongles[id];
+		pthread_mutex_destroy(&dongle->lock);
+		id++;
+	}
+	pthread_mutex_destroy(&simul->log_lock);
+	pthread_mutex_destroy(&simul->stop_lock);
+	free(simul->dongles);
+	free(simul->coders);
+}

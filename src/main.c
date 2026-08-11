@@ -28,6 +28,7 @@ int	main(int argc, char **argv)
 		fprintf(stderr, "ERROR: Simulation initialization failed.\n");
 		return (1);
 	}
+	cleanup_simulation(&simul);
 	return (0);
 }
 
