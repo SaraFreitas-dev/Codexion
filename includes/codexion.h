@@ -58,6 +58,12 @@ typedef struct simulation
 	pthread_mutex_t		log_lock;
 }	t_simulation;
 
+typedef struct s_heap
+{
+	t_entry	*data;
+	int		size;
+}	t_heap;
+
 typedef enum event_type
 {
 	DONGLE_TAKEN,
