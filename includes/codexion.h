@@ -86,5 +86,6 @@ void	cleanup_simulation(t_simulation *simul);
 
 //_____________________UTILS.C______________________
 long	get_time_ms(void);
+void	ft_swap(t_entry *a, t_entry *b);
 
 #endif
