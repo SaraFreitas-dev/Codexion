@@ -34,9 +34,39 @@ long	calculate_priority(t_simulation *simul, t_coder *coder)
 /*
 - sift_up: moves a too-small node up, swapping with its parent,
 until the min-heap property holds again.
+When it's used: right after a new element is added at the very
+bottom (end) of the array — it needs to travel up to its correct spot.
+*/
+void	sift_up(t_heap *heap, int i)
+{
+	int		parent_i;
+	long	curr_priority;
+	long	parent_priority;
+
+	while (i > 0)
+	{
+		parent_i = (i - 1) / 2;
+		curr_priority = calculate_priority(heap->data[i]->simul, heap->data[i]);
+		parent_priority = calculate_priority(heap->data[parent_i]->simul,
+			heap->data[parent_i]);
+		if (curr_priority >= parent_priority)
+			return ;
+		else
+		{
+			ft_swap(&heap->data[i], &heap->data[parent_i]);
+			i = parent_i;
+		}
+	}
+}
+
+/*
 - sift_down: moves a too-large node down, swapping with its
 SMALLER child, until the min-heap property holds again.
+When it's used: right after removing the root (the min) and
+moving the last leaf into its place — that displaced element
+needs to sink down to where it actually belongs.
 */
+
 
 /*
 min_heap_push / min_heap_pop functions:
