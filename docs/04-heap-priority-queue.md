@@ -78,6 +78,9 @@ piece.
 
 ### Insert (`sift-up` / `bubble-up`)
 
+**When it's used:** right after a new element is added at the very bottom
+(end) of the array — it needs to travel up to its correct spot.
+
 Start from this heap: `[3, 5, 8, 9, 7, 10, 12]`. Insert `4`.
 
 1. **Place it at the end** of the array (the next open leaf position, keeping
@@ -97,6 +100,10 @@ is `log n`, so the element crosses at most `log n` levels.
 
 ### Extract-min (`sift-down` / `bubble-down`)
 
+**When it's used:** right after removing the root (the min) and moving the
+last leaf into its place — that displaced element needs to sink down to
+where it actually belongs.
+
 Start from `[3, 4, 8, 5, 7, 10, 12, 9]`. Extract the minimum.
 
 1. **The root (index 0) is always the answer** — that's the entire point of
@@ -112,10 +119,6 @@ Start from `[3, 4, 8, 5, 7, 10, 12, 9]`. Extract the minimum.
    — smaller is `5`. Since `9 > 5`, swap: `[4, 5, 8, 9, 7, 10, 12]`
 5. **Repeat from index 3.** `left(3)=7` — out of bounds (array has 7 elements,
    indices 0-6). No children left — stop.
-
-Return the saved value, `3`. Same idea as insert, but the element sinks
-**down** instead of climbing up — hence "sift-down." Also `O(log n)`, same
-reasoning: at most one path from root to a leaf.
 
 ### The one detail that trips people up
 

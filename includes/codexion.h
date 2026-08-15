@@ -60,8 +60,8 @@ typedef struct simulation
 
 typedef struct s_heap
 {
-	t_entry	*data;
-	int		size;
+	t_coder				**data;
+	int					size;
 }	t_heap;
 
 typedef enum event_type
@@ -86,6 +86,6 @@ void	cleanup_simulation(t_simulation *simul);
 
 //_____________________UTILS.C______________________
 long	get_time_ms(void);
-void	ft_swap(t_entry *a, t_entry *b);
+void	ft_swap(t_coder *a, t_coder *b);
 
 #endif

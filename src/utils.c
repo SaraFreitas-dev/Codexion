@@ -12,7 +12,7 @@
 
 #include "codexion.h"
 
-// Calculate the time in milliseconds (logs.c)
+// Calculate the time in milliseconds
 long	get_time_ms(void)
 {
 	long			now_ms;
@@ -24,10 +24,10 @@ long	get_time_ms(void)
 }
 
 
-// To swap the data nodes in the heap struct (heap.c)
-void	ft_swap(t_entry *a, t_entry *b)
+// To swap the data nodes in the heap struct
+void	ft_swap(t_coder *a, t_coder *b)
 {
-	t_entry	temp;
+	t_coder	temp;
 
 	temp = *a;
 	*a = *b;
