@@ -25,6 +25,7 @@ SRCS    := src/main.c \
 		   src/logs.c \
 		   src/utils.c \
 		   src/init.c \
+		   src/heap.c \
 
 OBJS    := $(SRCS:.c=.o)
 

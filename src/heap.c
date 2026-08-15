@@ -13,42 +13,22 @@
 #include "codexion.h"
 
 /*
-Compute the priority key based on the active scheduler (fifo or edf)
-- fifo: the current time. Whoever calls this first gets the smallest
-  value, so first-come is served first.
-- edf: the coder's burnout deadline. Whoever is closest to burning out
-  gets the smallest value, so the most urgent coder is served first.
-The smaller value always wins priority in both modes.
-*/
-long	calculate_priority(t_simulation *simul, t_coder *coder)
-{
-	long	priority_ms;
-
-	if (strcmp(simul->scheduler, "edf") == 0)
-		priority_ms = coder->last_compile_start_ms + simul->time_to_burnout;
-	else
-		priority_ms = get_time_ms();
-	return (priority_ms);
-}
-
-/*
 - sift_up: moves a too-small node up, swapping with its parent,
 until the min-heap property holds again.
 When it's used: right after a new element is added at the very
 bottom (end) of the array — it needs to travel up to its correct spot.
 */
-void	sift_up(t_heap *heap, int i)
+void	sift_up(t_simulation *simul, t_heap *heap, int i)
 {
-	int		parent_i;
-	long	curr_priority;
-	long	parent_priority;
+	int				parent_i;
+	long			parent_priority;
+	long			curr_priority;
 
 	while (i > 0)
 	{
 		parent_i = (i - 1) / 2;
-		curr_priority = calculate_priority(heap->data[i]->simul, heap->data[i]);
-		parent_priority = calculate_priority(heap->data[parent_i]->simul,
-			heap->data[parent_i]);
+		curr_priority = calculate_priority(simul, heap->data[i]);
+		parent_priority = calculate_priority(simul, heap->data[parent_i]);
 		if (curr_priority >= parent_priority)
 			return ;
 		else
@@ -65,12 +45,83 @@ SMALLER child, until the min-heap property holds again.
 When it's used: right after removing the root (the min) and
 moving the last leaf into its place — that displaced element
 needs to sink down to where it actually belongs.
+- get_smaller_child: assistant to the sift_down function
 */
+static int	get_smaller_child(t_simulation *simul, t_heap *heap,
+	int i)
+{
+	int		smaller_i;
+	int		left_i;
+	int		right_i;
+	long	smaller_priority;
 
+	left_i = 2 * i + 1;
+	right_i = 2 * i + 2;
+	smaller_i = i;
+	smaller_priority = calculate_priority(simul, heap->data[smaller_i]);
+	if (left_i < heap->size
+		&& calculate_priority(simul, heap->data[left_i]) < smaller_priority)
+	{
+		smaller_i = left_i;
+		smaller_priority = calculate_priority(simul, heap->data[left_i]);
+	}
+	if (right_i < heap->size
+		&& calculate_priority(simul, heap->data[right_i]) < smaller_priority)
+		smaller_i = right_i;
+	return (smaller_i);
+}
+
+void	sift_down(t_simulation *simul, t_heap *heap, int i)
+{
+	int				smaller_i;
+
+	while (1)
+	{
+		smaller_i = get_smaller_child(simul, heap, i);
+		if (smaller_i == i)
+			return ;
+		ft_swap(&heap->data[i], &heap->data[smaller_i]);
+		i = smaller_i;
+	}
+}
 
 /*
-min_heap_push / min_heap_pop functions:
-Add or remove elements from the heap.
+Add an elements from the heap.
 push calls sift_up (new node climbs to its correct spot).
+*/
+int	min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder)
+{
+	if (heap->size >= simul->number_of_coders)
+	{
+		fprintf(stderr, "ERROR: Heap is full.\n");
+		return (1);
+	}
+	heap->data[heap->size] = new_coder;
+	heap->size++;
+	sift_up(simul, heap, heap->size - 1);
+	return (0);
+}
+
+/*
+Remove an elements from the heap and return it.
+The one to return is always the first one in the array since
+its already sorted.
 pop calls sift_down (root replacement sinks to its correct spot).
 */
+t_coder	*min_heap_pop(t_simulation *simul, t_heap *heap)
+{
+	t_coder	*last_element;
+	t_coder	*first_element;
+
+	if (heap->size <= 0)
+	{
+		fprintf(stderr, "ERROR: Heap is already empty.\n");
+		return (NULL);
+	}
+	last_element = heap->data[heap->size - 1];
+	first_element = heap->data[0];
+	heap->data[0] = last_element;
+	heap->size--;
+	sift_down(simul, heap, 0);
+	return (first_element);
+}

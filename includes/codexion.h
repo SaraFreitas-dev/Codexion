@@ -21,12 +21,19 @@
 # include <sys/time.h>
 # include <unistd.h>
 
+typedef struct s_heap
+{
+	struct coder		**data;
+	int					size;
+}	t_heap;
+
 typedef struct dongle
 {
 	int					dongle_id;
 	bool				is_available;
 	long				released_at_ms; // For the cooldown
 	pthread_mutex_t		lock;
+	t_heap				heap; // Waiting list of coders
 }	t_dongle;
 
 typedef struct coder
@@ -58,12 +65,6 @@ typedef struct simulation
 	pthread_mutex_t		log_lock;
 }	t_simulation;
 
-typedef struct s_heap
-{
-	t_coder				**data;
-	int					size;
-}	t_heap;
-
 typedef enum event_type
 {
 	DONGLE_TAKEN,
@@ -77,15 +78,24 @@ typedef enum event_type
 //_____________________PARSER.C_____________________
 char	**verify_args(int argc, char **argv);
 
-//______________________LOG.C_______________________
-void	print_log(t_simulation *simul, t_coder *coder, t_event event);
-
 //______________________INIT.C_______________________
 int		init_simulation(t_simulation *simul, char **args);
 void	cleanup_simulation(t_simulation *simul);
 
+//______________________LOG.C_______________________
+void	print_log(t_simulation *simul, t_coder *coder, t_event event);
+
+//____________________SCHEDULER.C____________________
+long	calculate_priority(t_simulation *simul, t_coder *coder);
+
 //_____________________UTILS.C______________________
 long	get_time_ms(void);
-void	ft_swap(t_coder *a, t_coder *b);
+void	ft_swap(t_coder **a, t_coder **b);
+
+//______________________HEAP.C______________________
+void	sift_up(t_simulation *simul, t_heap *heap, int i);
+void	sift_down(t_simulation *simul, t_heap *heap, int i);
+int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);
+t_coder	*min_heap_pop(t_simulation *simul, t_heap *heap);
 
 #endif

@@ -13,6 +13,21 @@
 #include "codexion.h"
 
 /*
+Inicialize the heap on the dongle struct
+*/
+static int	init_dongle_heap(t_dongle *dongle, int capacity)
+{
+	dongle->heap.data = malloc(sizeof(t_coder *) * capacity);
+	if (!dongle->heap.data)
+	{
+		fprintf(stderr, "ERROR: Failed to initialize dongle heap.\n");
+		return (1);
+	}
+	dongle->heap.size = 0;
+	return (0);
+}
+
+/*
 Fill each dongle's data. Keeping in mind the subject rule:
 "There is one dongle between each pair of coders.
 Therefore, if there are several coders, each coder has a dongle
@@ -37,9 +52,10 @@ int	init_dongles(t_simulation *simul)
 		dongle->dongle_id = id + 1;
 		dongle->is_available = true;
 		dongle->released_at_ms = 0;
-		if (pthread_mutex_init(&dongle->lock, NULL) != 0)
+		if (init_dongle_heap(dongle, simul->number_of_coders) == 1
+			|| pthread_mutex_init(&dongle->lock, NULL) != 0)
 		{
-			fprintf(stderr, "ERROR: Failed to initialize dongle mutex.\n");
+			fprintf(stderr, "ERROR: Failed to initialize dongle.\n");
 			return (1);
 		}
 		id++;
@@ -119,6 +135,7 @@ void	cleanup_simulation(t_simulation *simul)
 	while (id < simul->number_of_coders)
 	{
 		dongle = &simul->dongles[id];
+		free(dongle->heap.data);
 		pthread_mutex_destroy(&dongle->lock);
 		id++;
 	}

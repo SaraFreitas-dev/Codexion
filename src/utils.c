@@ -23,13 +23,13 @@ long	get_time_ms(void)
 	return (now_ms);
 }
 
-
 // To swap the data nodes in the heap struct
-void	ft_swap(t_coder *a, t_coder *b)
+void	ft_swap(t_coder **a, t_coder **b)
 {
-	t_coder	temp;
+	t_coder	*temp;
 
 	temp = *a;
 	*a = *b;
 	*b = temp;
 }
+
