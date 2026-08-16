@@ -32,4 +32,3 @@ void	ft_swap(t_coder **a, t_coder **b)
 	*a = *b;
 	*b = temp;
 }
-

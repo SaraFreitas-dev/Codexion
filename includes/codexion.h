@@ -34,6 +34,7 @@ typedef struct dongle
 	long				released_at_ms; // For the cooldown
 	pthread_mutex_t		lock;
 	t_heap				heap; // Waiting list of coders
+	pthread_cond_t		cond;
 }	t_dongle;
 
 typedef struct coder

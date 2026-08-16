@@ -9,6 +9,8 @@ https://www.geeksforgeeks.org/c/c-program-to-implement-min-heap/
 
 https://www.geeksforgeeks.org/dsa/insertion-and-deletion-in-heaps/
 
+https://www.geeksforgeeks.org/linux-unix/condition-wait-signal-multi-threading/
+
 ```bash
 ./codexion 5 800 200 200 101 3 100 fifo 
 ```

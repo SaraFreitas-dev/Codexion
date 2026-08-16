@@ -53,11 +53,9 @@ int	init_dongles(t_simulation *simul)
 		dongle->is_available = true;
 		dongle->released_at_ms = 0;
 		if (init_dongle_heap(dongle, simul->number_of_coders) == 1
-			|| pthread_mutex_init(&dongle->lock, NULL) != 0)
-		{
-			fprintf(stderr, "ERROR: Failed to initialize dongle.\n");
+			|| pthread_mutex_init(&dongle->lock, NULL) != 0
+			|| pthread_cond_init(&dongle->cond, NULL) != 0)
 			return (1);
-		}
 		id++;
 	}
 	return (0);
