@@ -135,6 +135,7 @@ void	cleanup_simulation(t_simulation *simul)
 		dongle = &simul->dongles[id];
 		free(dongle->heap.data);
 		pthread_mutex_destroy(&dongle->lock);
+		pthread_cond_destroy(&dongle->cond);
 		id++;
 	}
 	pthread_mutex_destroy(&simul->log_lock);
