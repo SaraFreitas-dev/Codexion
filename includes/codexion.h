@@ -99,4 +99,8 @@ void	sift_down(t_simulation *simul, t_heap *heap, int i);
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);
 t_coder	*min_heap_pop(t_simulation *simul, t_heap *heap);
 
+//_____________________DONGLE.C_____________________
+void	take_both_dongles(t_simulation *simul, t_coder *coder);
+void	release_both_dongle(t_coder *coder);
+
 #endif

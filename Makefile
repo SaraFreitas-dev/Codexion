@@ -27,7 +27,7 @@ SRCS    := src/main.c \
 		   src/init.c \
 		   src/heap.c \
 		   src/dongle.c \
-		   src/scheduler.c
+		   src/scheduler.c \
 
 OBJS    := $(SRCS:.c=.o)
 
