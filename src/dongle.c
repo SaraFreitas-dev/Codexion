@@ -18,7 +18,8 @@ dongle is available, its cooldown has passed, AND this coder is
 next in line (top of the waiting heap). Marks it as taken before
 returning.
 */
-static void	try_take_dongle(t_simulation *simul, t_dongle *dongle, t_coder *coder)
+static void	try_take_dongle(t_simulation *simul,
+	t_dongle *dongle, t_coder *coder)
 {
 	long	remaining_cooldown_t;
 

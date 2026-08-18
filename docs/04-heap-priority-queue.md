@@ -10,6 +10,8 @@ A naive approach (loop through all waiters to find the minimum) works but is
 more importantly, the subject **forbids** using a standard library priority queue
 (there isn't one in C anyway, but the point stands: you must build it yourself).
 
+![Representation of Binary Heap](./Representation_of_Binary_Heap.webp)
+
 ## 🌲 What a binary heap actually is
 
 A **min-heap** is a binary tree with one property, and only one: **every parent
