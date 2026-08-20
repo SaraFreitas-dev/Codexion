@@ -34,6 +34,7 @@ static void	try_take_dongle(t_simulation *simul,
 		remaining_cooldown_t = get_time_ms() - dongle->released_at_ms;
 	}
 	dongle->is_available = false;
+	print_log(simul, coder, DONGLE_TAKEN);
 	min_heap_pop(simul, &dongle->heap);
 	pthread_mutex_unlock(&dongle->lock);
 }

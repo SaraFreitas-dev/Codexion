@@ -94,8 +94,6 @@ long	get_time_ms(void);
 void	ft_swap(t_coder **a, t_coder **b);
 
 //______________________HEAP.C______________________
-void	sift_up(t_simulation *simul, t_heap *heap, int i);
-void	sift_down(t_simulation *simul, t_heap *heap, int i);
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);
 t_coder	*min_heap_pop(t_simulation *simul, t_heap *heap);
 

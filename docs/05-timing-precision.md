@@ -82,6 +82,29 @@ computed with `clock_gettime()` somewhere else — the two clocks aren't guarant
 to agree on the same "zero point," so subtracting one from the other gives garbage.
 Pick one function, use it everywhere, always convert to milliseconds the same way.
 
+## 💤 `usleep()` — the basics
+
+`usleep(useconds_t usec)` pauses the **calling thread** for at least `usec`
+**microseconds**, then lets it continue. Nothing else happens automatically —
+it doesn't return a value you need to check in normal use, and it only
+affects the thread that called it, not the whole program.
+
+```c
+usleep(200000);   // pause this thread for at least 200,000 microseconds (200ms)
+```
+
+The unit trips people up constantly: **microseconds, not milliseconds**. Since
+this project's arguments (`time_to_compile`, `time_to_debug`, etc.) are given
+in **milliseconds**, you need to convert before calling `usleep`:
+
+```c
+usleep(simul->time_to_compile * 1000);   // ms -> us, multiply by 1000
+```
+
+That's genuinely the whole basic API — no struct to fill in, no flags, just a
+number of microseconds to wait. Where it gets subtle is in *how precisely* it
+actually wakes up, covered below.
+
 ## 💤 `usleep()` and its limits
 
 `usleep(microseconds)` suspends a thread for **at least** the given time — the OS

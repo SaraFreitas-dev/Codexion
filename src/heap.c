@@ -18,7 +18,7 @@ until the min-heap property holds again.
 When it's used: right after a new element is added at the very
 bottom (end) of the array — it needs to travel up to its correct spot.
 */
-void	sift_up(t_simulation *simul, t_heap *heap, int i)
+static void	sift_up(t_simulation *simul, t_heap *heap, int i)
 {
 	int				parent_i;
 	long			parent_priority;
@@ -71,7 +71,7 @@ static int	get_smaller_child(t_simulation *simul, t_heap *heap,
 	return (smaller_i);
 }
 
-void	sift_down(t_simulation *simul, t_heap *heap, int i)
+static void	sift_down(t_simulation *simul, t_heap *heap, int i)
 {
 	int				smaller_i;
 
