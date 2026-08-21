@@ -62,8 +62,8 @@ typedef struct simulation
 	bool				should_stop; // Shared flag
 	t_dongle			*dongles;
 	t_coder				*coders;
-	pthread_mutex_t		stop_lock;
-	pthread_mutex_t		log_lock;
+	pthread_mutex_t		stop_lock; // Protects the should_stop bool flag
+	pthread_mutex_t		log_lock; // Protects the printf inside print_log
 }	t_simulation;
 
 typedef enum event_type
@@ -100,5 +100,8 @@ t_coder	*min_heap_pop(t_simulation *simul, t_heap *heap);
 //_____________________DONGLE.C_____________________
 void	take_both_dongles(t_simulation *simul, t_coder *coder);
 void	release_both_dongle(t_coder *coder);
+
+//_____________________CODER.C______________________
+void	*coder_routine(void *arg);
 
 #endif
