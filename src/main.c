@@ -16,6 +16,8 @@ int	main(int argc, char **argv)
 {
 	char			**parsed_args;
 	t_simulation	simul;
+	pthread_t		monitor_thread;
+	int				i;
 
 	parsed_args = verify_args(argc, argv);
 	if (parsed_args == NULL)
@@ -28,13 +30,21 @@ int	main(int argc, char **argv)
 		fprintf(stderr, "ERROR: Simulation initialization failed.\n");
 		return (1);
 	}
+	i = 0;
+	while (i < simul.number_of_coders)
+	{
+		pthread_create(&simul.coders[i].thread, NULL,
+			coder_routine, &simul.coders[i]);
+		i++;
+	}
+	pthread_create(&monitor_thread, NULL, monitor_routine, &simul);
+	i = 0;
+	while (i < simul.number_of_coders)
+	{
+		pthread_join(simul.coders[i].thread, NULL);
+		i++;
+	}
+	pthread_join(monitor_thread, NULL);
 	cleanup_simulation(&simul);
 	return (0);
 }
-
-/*
-	if (verify_args(argc, argv) == NULL)
-		printf("ERROR: Invalid arguments.\n");
-	else
-		printf("Success.\n");
-*/

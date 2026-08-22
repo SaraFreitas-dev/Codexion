@@ -40,6 +40,7 @@ typedef struct dongle
 typedef struct coder
 {
 	int					coder_id;
+	long				priority_ms;
 	int					times_compiled;
 	long				last_compile_start_ms; // For burnout and deadline (EDF)
 	t_dongle			*left_dongle;
@@ -86,22 +87,23 @@ void	cleanup_simulation(t_simulation *simul);
 //______________________LOG.C_______________________
 void	print_log(t_simulation *simul, t_coder *coder, t_event event);
 
-//____________________SCHEDULER.C____________________
-long	calculate_priority(t_simulation *simul, t_coder *coder);
-
 //_____________________UTILS.C______________________
 long	get_time_ms(void);
+long	calculate_priority(t_simulation *simul, t_coder *coder);
 void	ft_swap(t_coder **a, t_coder **b);
 
 //______________________HEAP.C______________________
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);
-t_coder	*min_heap_pop(t_simulation *simul, t_heap *heap);
+t_coder	*min_heap_pop(t_heap *heap);
 
 //_____________________DONGLE.C_____________________
-void	take_both_dongles(t_simulation *simul, t_coder *coder);
+bool	take_both_dongles(t_simulation *simul, t_coder *coder);
 void	release_both_dongle(t_coder *coder);
 
 //_____________________CODER.C______________________
 void	*coder_routine(void *arg);
+
+//____________________MONITOR.C______________________
+void	*monitor_routine(void *arg);
 
 #endif

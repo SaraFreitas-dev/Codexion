@@ -21,21 +21,31 @@ returning.
 static void	try_take_dongle(t_simulation *simul,
 	t_dongle *dongle, t_coder *coder)
 {
-	long	remaining_cooldown_t;
+	long			remaining_cooldown_t;
+	struct timespec	ts;
 
 	pthread_mutex_lock(&dongle->lock);
+	coder->priority_ms = calculate_priority(simul, coder);
 	remaining_cooldown_t = get_time_ms() - dongle->released_at_ms;
 	min_heap_push(simul, &dongle->heap, coder);
-	while (!dongle->is_available
+	while ((!dongle->is_available
 		|| remaining_cooldown_t < simul->dongle_cooldown
-		|| dongle->heap.data[0] != coder)
+		|| dongle->heap.data[0] != coder) && !simul->should_stop)
 	{
-		pthread_cond_wait(&dongle->cond, &dongle->lock);
+		ts.tv_sec = (dongle->released_at_ms + simul->dongle_cooldown) / 1000;
+		ts.tv_nsec = ((dongle->released_at_ms + 
+			simul->dongle_cooldown) % 1000) * 1000000;
+		pthread_cond_timedwait(&dongle->cond, &dongle->lock, &ts);
 		remaining_cooldown_t = get_time_ms() - dongle->released_at_ms;
+	}
+	if (simul->should_stop)
+	{
+		pthread_mutex_unlock(&dongle->lock);
+		return ;
 	}
 	dongle->is_available = false;
 	print_log(simul, coder, DONGLE_TAKEN);
-	min_heap_pop(simul, &dongle->heap);
+	min_heap_pop(&dongle->heap);
 	pthread_mutex_unlock(&dongle->lock);
 }
 
@@ -44,11 +54,16 @@ Attempt to use both dongles from a coder:
 Left and right side. But first, choose the one to take
 first based on their dongle_id.
 */
-void	take_both_dongles(t_simulation *simul, t_coder *coder)
+bool	take_both_dongles(t_simulation *simul, t_coder *coder)
 {
 	t_dongle	*first_place;
 	t_dongle	*second_place;
 
+	if (coder->left_dongle == coder->right_dongle)
+	{
+		try_take_dongle(simul, coder->left_dongle, coder);
+		return (!simul->should_stop);
+	}
 	if ((coder->left_dongle->dongle_id) < (coder->right_dongle->dongle_id))
 	{
 		first_place = coder->left_dongle;
@@ -60,7 +75,12 @@ void	take_both_dongles(t_simulation *simul, t_coder *coder)
 		second_place = coder->left_dongle;
 	}
 	try_take_dongle(simul, first_place, coder);
+	if (simul->should_stop)
+		return (false);
 	try_take_dongle(simul, second_place, coder);
+	if (simul->should_stop)
+		return (false);
+	return (true);
 }
 
 /*
@@ -74,7 +94,7 @@ static void	release_dongle(t_dongle *dongle)
 	pthread_mutex_lock(&dongle->lock);
 	dongle->is_available = true;
 	dongle->released_at_ms = get_time_ms();
-	pthread_cond_signal(&dongle->cond);
+	pthread_cond_broadcast(&dongle->cond);
 	pthread_mutex_unlock(&dongle->lock);
 }
 
@@ -82,5 +102,6 @@ static void	release_dongle(t_dongle *dongle)
 void	release_both_dongle(t_coder *coder)
 {
 	release_dongle(coder->left_dongle);
-	release_dongle(coder->right_dongle);
+	if (coder->left_dongle != coder->right_dongle)
+		release_dongle(coder->right_dongle);
 }

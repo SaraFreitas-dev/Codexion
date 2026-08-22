@@ -27,14 +27,16 @@ static void	sleep_phase(t_simulation *simul, t_coder *coder,
 /*
 Print and manage the COMPILING event / phase.
 */
-static void	compile_phase(t_simulation *simul, t_coder *coder)
+static bool	compile_phase(t_simulation *simul, t_coder *coder)
 {
-	take_both_dongles(simul, coder);
+	if (!take_both_dongles(simul, coder))
+		return (false);
 	coder->last_compile_start_ms = get_time_ms();
 	print_log(simul, coder, COMPILING);
 	usleep(simul->time_to_compile * 1000);
 	coder->times_compiled++;
 	release_both_dongle(coder);
+	return (true);
 }
 
 /*
@@ -58,7 +60,8 @@ void	*coder_routine(void *arg)
 		pthread_mutex_unlock(&simul->stop_lock);
 		if (to_stop)
 			break ;
-		compile_phase(simul, coder);
+		if (!compile_phase(simul, coder))
+			break ;
 		sleep_phase(simul, coder, DEBUGGING, simul->time_to_debug);
 		sleep_phase(simul, coder, REFACTORING, simul->time_to_refactor);
 	}

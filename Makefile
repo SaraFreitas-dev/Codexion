@@ -28,6 +28,7 @@ SRCS    := src/main.c \
 		   src/heap.c \
 		   src/dongle.c \
 		   src/coder.c \
+		   src/monitor.c \
 
 OBJS    := $(SRCS:.c=.o)
 
