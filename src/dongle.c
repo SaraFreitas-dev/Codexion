@@ -12,6 +12,16 @@
 
 #include "codexion.h"
 
+static bool	should_stop_now(t_simulation *simul)
+{
+	bool	result;
+
+	pthread_mutex_lock(&simul->stop_lock);
+	result = simul->should_stop;
+	pthread_mutex_unlock(&simul->stop_lock);
+	return (result);
+}
+
 /*
 Try to acquire a single dongle: waits (via cond_wait) until the
 dongle is available, its cooldown has passed, AND this coder is
@@ -29,16 +39,14 @@ static void	try_take_dongle(t_simulation *simul,
 	remaining_cooldown_t = get_time_ms() - dongle->released_at_ms;
 	min_heap_push(simul, &dongle->heap, coder);
 	while ((!dongle->is_available
-		|| remaining_cooldown_t < simul->dongle_cooldown
-		|| dongle->heap.data[0] != coder) && !simul->should_stop)
+			|| remaining_cooldown_t < simul->dongle_cooldown
+			|| dongle->heap.data[0] != coder) && !should_stop_now(simul))
 	{
-		ts.tv_sec = (dongle->released_at_ms + simul->dongle_cooldown) / 1000;
-		ts.tv_nsec = ((dongle->released_at_ms + 
-			simul->dongle_cooldown) % 1000) * 1000000;
+		get_cooldown_deadline(dongle, simul->dongle_cooldown, &ts);
 		pthread_cond_timedwait(&dongle->cond, &dongle->lock, &ts);
 		remaining_cooldown_t = get_time_ms() - dongle->released_at_ms;
 	}
-	if (simul->should_stop)
+	if (should_stop_now(simul))
 	{
 		pthread_mutex_unlock(&dongle->lock);
 		return ;
@@ -62,7 +70,7 @@ bool	take_both_dongles(t_simulation *simul, t_coder *coder)
 	if (coder->left_dongle == coder->right_dongle)
 	{
 		try_take_dongle(simul, coder->left_dongle, coder);
-		return (!simul->should_stop);
+		return (!should_stop_now(simul));
 	}
 	if ((coder->left_dongle->dongle_id) < (coder->right_dongle->dongle_id))
 	{
@@ -75,10 +83,10 @@ bool	take_both_dongles(t_simulation *simul, t_coder *coder)
 		second_place = coder->left_dongle;
 	}
 	try_take_dongle(simul, first_place, coder);
-	if (simul->should_stop)
+	if (should_stop_now(simul))
 		return (false);
 	try_take_dongle(simul, second_place, coder);
-	if (simul->should_stop)
+	if (should_stop_now(simul))
 		return (false);
 	return (true);
 }

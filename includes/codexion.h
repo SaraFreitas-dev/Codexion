@@ -46,6 +46,7 @@ typedef struct coder
 	t_dongle			*left_dongle;
 	t_dongle			*right_dongle;
 	pthread_t			thread; // To join the thread
+	pthread_mutex_t		time_lock;
 	struct simulation	*simul;
 }	t_coder;
 
@@ -91,6 +92,8 @@ void	print_log(t_simulation *simul, t_coder *coder, t_event event);
 long	get_time_ms(void);
 long	calculate_priority(t_simulation *simul, t_coder *coder);
 void	ft_swap(t_coder **a, t_coder **b);
+void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
+			struct timespec *ts);
 
 //______________________HEAP.C______________________
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);

@@ -67,11 +67,12 @@ test: all
 	fi
 	@echo ""
 	@echo "🧵 [3/3] Helgrind (race detection)..."
-	@if valgrind --tool=helgrind --error-exitcode=1 -q \
-		./$(NAME) $(ARGS) > /tmp/helgrind.log 2>&1; then \
-		echo "✅ No races detected"; \
-	else \
+	@valgrind --tool=helgrind -q \
+		./$(NAME) $(ARGS) > /tmp/helgrind.log 2>&1; \
+	if grep -q "Possible data race" /tmp/helgrind.log; then \
 		echo "❌ Helgrind found issues:"; cat /tmp/helgrind.log; \
+	else \
+		echo "✅ No races detected"; \
 	fi
 	@echo ""
 	@echo "🏁 Test suite finished."

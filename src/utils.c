@@ -42,6 +42,16 @@ long	calculate_priority(t_simulation *simul, t_coder *coder)
 	return (priority_ms);
 }
 
+void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
+	struct timespec *ts)
+{
+	long	deadline_ms;
+
+	deadline_ms = dongle->released_at_ms + cooldown;
+	ts->tv_sec = deadline_ms / 1000;
+	ts->tv_nsec = deadline_ms % 1000 * 1000000;
+}
+
 // To swap the data nodes in the heap struct
 void	ft_swap(t_coder **a, t_coder **b)
 {

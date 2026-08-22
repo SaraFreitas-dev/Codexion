@@ -90,6 +90,8 @@ int	init_coders(t_simulation *simul)
 		coder->left_dongle = &simul->dongles[id];
 		coder->right_dongle = (&simul->dongles[(id + 1)
 				% simul->number_of_coders]);
+		if (pthread_mutex_init(&coder->time_lock, NULL) != 0)
+			return (1);
 		id++;
 	}
 	return (0);
@@ -136,6 +138,7 @@ void	cleanup_simulation(t_simulation *simul)
 		free(dongle->heap.data);
 		pthread_mutex_destroy(&dongle->lock);
 		pthread_cond_destroy(&dongle->cond);
+		pthread_mutex_destroy(&simul->coders[id].time_lock);
 		id++;
 	}
 	pthread_mutex_destroy(&simul->log_lock);

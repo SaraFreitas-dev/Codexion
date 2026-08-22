@@ -31,10 +31,14 @@ static bool	compile_phase(t_simulation *simul, t_coder *coder)
 {
 	if (!take_both_dongles(simul, coder))
 		return (false);
+	pthread_mutex_lock(&coder->time_lock);
 	coder->last_compile_start_ms = get_time_ms();
+	pthread_mutex_unlock(&coder->time_lock);
 	print_log(simul, coder, COMPILING);
 	usleep(simul->time_to_compile * 1000);
+	pthread_mutex_lock(&coder->time_lock);
 	coder->times_compiled++;
+	pthread_mutex_unlock(&coder->time_lock);
 	release_both_dongle(coder);
 	return (true);
 }

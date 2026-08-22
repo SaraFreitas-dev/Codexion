@@ -16,15 +16,24 @@
 static bool	coder_is_in_burnout(t_simulation *simul, t_coder *coder)
 {
 	long	time_since_last_compile;
+	long	last_compile;
 
-	time_since_last_compile = get_time_ms() - coder->last_compile_start_ms;
+	pthread_mutex_lock(&coder->time_lock);
+	last_compile = coder->last_compile_start_ms;
+	pthread_mutex_unlock(&coder->time_lock);
+	time_since_last_compile = get_time_ms() - last_compile;
 	return (time_since_last_compile > simul->time_to_burnout);
 }
 
 // Check if the coder has reached the number of compiles required
 static bool	coder_compilations_are_finished(t_simulation *simul, t_coder *coder)
 {
-	return (coder->times_compiled >= simul->number_of_compiles_required);
+	int	compiled;
+
+	pthread_mutex_lock(&coder->time_lock);
+	compiled = coder->times_compiled;
+	pthread_mutex_unlock(&coder->time_lock);
+	return (compiled >= simul->number_of_compiles_required);
 }
 
 /*
