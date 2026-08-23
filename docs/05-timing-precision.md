@@ -117,6 +117,26 @@ chunks (e.g., `usleep(time_to_burnout * 1000)`) means your wakeup could be
 - Use `pthread_cond_timedwait` with a precise deadline, which wakes up close to
   the actual target time rather than "whenever the sleep happens to end"
 
+### `pthread_cond_wait` vs `pthread_cond_timedwait` — a different kind of "waking up late"
+
+`pthread_cond_wait` only wakes a thread when someone else calls `signal` or
+`broadcast` on that condition variable. Nothing else will ever wake it — not
+a timeout, not a change elsewhere in the program. Now think about the
+`dongle_cooldown` requirement: a dongle only becomes usable again once its
+cooldown has *elapsed*, which is a **passage of time**, not an *event* anyone
+signals. If a thread is asleep in `pthread_cond_wait` waiting for a dongle,
+and the only thing that will ever call `signal`/`broadcast` on it is "someone
+releases this dongle" — what wakes that thread up once the cooldown itself
+expires, if nobody releases (or re-releases) anything in the meantime?
+
+`pthread_cond_timedwait` adds a deadline to the wait: the thread wakes up
+either when signaled *or* when the deadline passes, whichever comes first —
+without anyone needing to signal it. Think about which of your waiting
+conditions are event-driven ("someone freed a dongle") versus time-driven
+("the cooldown window closes") before deciding which wait primitive fits
+which situation — and what happens if you use the wrong one for a
+time-driven condition.
+
 ## 🛰️ The monitor thread's job
 
 A **separate thread** (not one of the coder threads) is responsible for watching
@@ -128,6 +148,20 @@ It needs to:
 
 A polling loop with a short sleep interval (a few ms) is a simple, defensible
 approach here — precise enough to hit the deadline, cheap enough not to burn CPU.
+
+### When exactly does a coder notice the simulation should stop?
+
+A shared "should stop" flag only helps if something actually checks it. Think
+through a coder's full cycle — compile, debug, refactor, repeat — and ask:
+at which points does the coder thread actually look at that flag? If it's only
+checked once, at the very top of the loop, what happens to a coder that's
+*already* asleep inside a long `usleep` for `time_to_debug` when another
+coder burns out? Does it finish that sleep and print `is debugging` anyway
+(and possibly start `is refactoring` too) after the burnout was already
+logged? Is that acceptable, or does it contradict "the simulation stops when
+a coder burns out"? There's no single universally-agreed answer baked into
+the subject here — but it's a decision worth making on purpose, not by
+accident of where you happened to put the check.
 
 ## 🧠 Practical checklist
 

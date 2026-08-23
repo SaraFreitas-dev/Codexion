@@ -51,6 +51,27 @@ A deadlock can only occur if **all four** of these hold simultaneously. Breaking
 **Codexion's `burnout`** is essentially a **starvation** failure: the simulation doesn't
 freeze, but one coder never gets to compile in time.
 
+## 🧍 The N=1 edge case — read the subject twice here
+
+The subject states the general rule ("N coders → N dongles, one dongle between
+each pair") and then adds, almost as an aside: *"If there is only one coder,
+there should be only one dongle on the table."* It's easy to read that sentence
+as just clarifying the topology and move on — but sit with what it implies
+before writing any code for this case.
+
+**Compiling always needs *two* dongles at once** ("one in each hand"). With
+exactly one dongle on the table, ask yourself: can a single coder ever satisfy
+that requirement, no matter how the code is written? If the answer is no, what
+should actually happen when you run the simulation with `number_of_coders=1`?
+Does the coder loop forever without ever compiling? Does it eventually trigger
+one of the two stop conditions the subject already defines? Which one, and why?
+
+This is a case worth testing **before** you assume your general N-coder logic
+"just handles it" — a two-dongle-at-once requirement colliding with a
+one-dongle table is exactly the kind of edge case that's tempting to special-case
+away (e.g., "let the single dongle count as both") without checking whether that
+matches what the subject actually describes.
+
 ## 🔗 Why this matters for Codexion
 
 The project explicitly requires:

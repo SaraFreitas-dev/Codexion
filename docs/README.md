@@ -10,11 +10,11 @@ Each file below covers one concept needed to understand and defend the project.
 
 | File | Covers |
 |---|---|
-| [`01-dining-philosophers.md`](./01-dining-philosophers.md) | The classic problem, Coffman's 4 conditions, deadlock vs starvation vs livelock |
+| [`01-dining-philosophers.md`](./01-dining-philosophers.md) | The classic problem, Coffman's 4 conditions, deadlock vs starvation vs livelock, the N=1 edge case |
 | [`02-pthreads-sync.md`](./02-pthreads-sync.md) | `pthread_mutex_t`, `pthread_cond_t`, wait/signal/broadcast, critical sections |
 | [`03-scheduling-fifo-edf.md`](./03-scheduling-fifo-edf.md) | FIFO vs Earliest Deadline First scheduling, tie-breaking, real-time scheduling basics |
 | [`04-heap-priority-queue.md`](./04-heap-priority-queue.md) | Binary min-heap implemented from scratch, insert/extract-min, use as a scheduler queue |
-| [`05-timing-precision.md`](./05-timing-precision.md) | `gettimeofday()` vs `clock_gettime()`, `usleep()` drift, hitting the 10ms burnout window |
+| [`05-timing-precision.md`](./05-timing-precision.md) | `gettimeofday()` vs `clock_gettime()`, `usleep()` drift, `timedwait` vs `wait`, when a coder notices should_stop, hitting the 10ms burnout window |
 | [`06-concurrency-debugging.md`](./06-concurrency-debugging.md) | Valgrind, Helgrind, ThreadSanitizer — catching leaks, races, and deadlocks |
 
 ## 🎯 How this maps to Codexion

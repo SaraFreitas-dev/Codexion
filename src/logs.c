@@ -47,13 +47,37 @@ long	get_curr_timestamp(t_simulation *simul)
 	return (elapsed_ms);
 }
 
+/*
+Print a timestamped event while serializing access to stdout.
+Normal events are ignored once the simulation has stopped.
+*/
+static void	print_timestamp(t_simulation *simul, t_event event,
+	t_coder *coder, long timestamp_in_ms)
+{
+	const char	*event_type;
+
+	event_type = get_event_str(event);
+	if (!event_type)
+		return ;
+	pthread_mutex_lock(&simul->log_lock);
+	if (event != BURNED_OUT && should_stop_now(simul))
+	{
+		pthread_mutex_unlock(&simul->log_lock);
+		return ;
+	}
+	if (USE_COLOR && event == BURNED_OUT)
+		printf("\033[31m%ld %d %s\033[0m\n",
+			timestamp_in_ms, coder->coder_id, event_type);
+	else
+		printf("%ld %d %s\n", timestamp_in_ms, coder->coder_id, event_type);
+	pthread_mutex_unlock(&simul->log_lock);
+}
+
 // Print by each event: timestamp_in_ms X has taken a dongle
 // Lock/unlock the mutex to prevent threads from printing at the same time
 void	print_log(t_simulation *simul, t_coder *coder, t_event event)
 {
 	long		timestamp_in_ms;
-	int			coder_id;
-	const char	*event_type;
 
 	if (!coder || !simul)
 	{
@@ -61,18 +85,10 @@ void	print_log(t_simulation *simul, t_coder *coder, t_event event)
 		return ;
 	}
 	timestamp_in_ms = get_curr_timestamp(simul);
-	coder_id = coder->coder_id;
-	event_type = get_event_str(event);
-	if ((timestamp_in_ms == -1) || event_type == NULL)
+	if (timestamp_in_ms == -1)
 	{
 		fprintf(stderr, "ERROR: Failed to print a log.\n");
 		return ;
 	}
-	pthread_mutex_lock(&simul->log_lock);
-	if (USE_COLOR && event == BURNED_OUT)
-		printf("\033[31m%ld %d %s\033[0m\n",
-			timestamp_in_ms, coder_id, event_type);
-	else
-		printf("%ld %d %s\n", timestamp_in_ms, coder_id, event_type);
-	pthread_mutex_unlock(&simul->log_lock);
+	print_timestamp(simul, event, coder, timestamp_in_ms);
 }

@@ -54,6 +54,9 @@ static bool	check_all_coders(t_simulation *simul)
 		coder = &simul->coders[id];
 		if (coder_is_in_burnout(simul, coder))
 		{
+			pthread_mutex_lock(&simul->stop_lock);
+			simul->should_stop = true;
+			pthread_mutex_unlock(&simul->stop_lock);
 			print_log(simul, coder, BURNED_OUT);
 			return (true);
 		}
