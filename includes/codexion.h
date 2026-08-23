@@ -13,6 +13,8 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
+# define USE_COLOR 1
+
 # include <stdbool.h>
 # include <pthread.h>
 # include <stdio.h>
@@ -94,6 +96,7 @@ long	calculate_priority(t_simulation *simul, t_coder *coder);
 void	ft_swap(t_coder **a, t_coder **b);
 void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
 			struct timespec *ts);
+bool	should_stop_now(t_simulation *simul);
 
 //______________________HEAP.C______________________
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);

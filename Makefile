@@ -38,7 +38,7 @@ OBJS    := $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT_A) $(PRINTF_A)
+$(NAME): $(OBJS) 
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 
@@ -46,29 +46,42 @@ $(NAME): $(OBJS) $(LIBFT_A) $(PRINTF_A)
 # Tester (Not mandatory, this tests the norms and leeks on the project)
 # --------------------------------------------------------------------------- #
 
-ARGS := 5 800 200 200 200 3 100 fifo
+# --------------------------------------------------------------------------- #
+# Tester (Not mandatory, this tests the norms and leeks on the project)
+# --------------------------------------------------------------------------- #
+
+ARGS_MULTI_STABLE := 5 1500 200 200 200 3 100 fifo
+ARGS_SINGLE_BURNOUT := 1 800 200 200 200 2 100 fifo
 
 test: all
 	@echo "🚀 Running full test suite..."
 	@echo ""
-	@echo "🔍 [1/3] Norm check..."
+	@echo "🔍 [1/4] Norm check..."
 	@if norminette src/*.c includes/*.h > /tmp/norm.log 2>&1; then \
 		echo "✅ Norm OK"; \
 	else \
 		echo "❌ Norm errors:"; cat /tmp/norm.log; \
 	fi
 	@echo ""
-	@echo "🧪 [2/3] Valgrind (leak-check)..."
+	@echo "🧪 [2/4] Valgrind (leak-check, multiple coders, stable)..."
 	@if valgrind --leak-check=full --error-exitcode=1 -q \
-		./$(NAME) $(ARGS) > /tmp/valgrind.log 2>&1; then \
+		./$(NAME) $(ARGS_MULTI_STABLE) > /tmp/valgrind.log 2>&1; then \
 		echo "✅ No leaks detected"; \
 	else \
 		echo "❌ Valgrind found issues:"; cat /tmp/valgrind.log; \
 	fi
 	@echo ""
-	@echo "🧵 [3/3] Helgrind (race detection)..."
+	@echo "🧪 [3/4] Valgrind (leak-check, single coder burnout path)..."
+	@if valgrind --leak-check=full --error-exitcode=1 -q \
+		./$(NAME) $(ARGS_SINGLE_BURNOUT) > /tmp/valgrind_single.log 2>&1; then \
+		echo "✅ No leaks detected"; \
+	else \
+		echo "❌ Valgrind found issues:"; cat /tmp/valgrind_single.log; \
+	fi
+	@echo ""
+	@echo "🧵 [4/4] Helgrind (race detection, multiple coders, stable)..."
 	@valgrind --tool=helgrind -q \
-		./$(NAME) $(ARGS) > /tmp/helgrind.log 2>&1; \
+		./$(NAME) $(ARGS_MULTI_STABLE) > /tmp/helgrind.log 2>&1; \
 	if grep -q "Possible data race" /tmp/helgrind.log; then \
 		echo "❌ Helgrind found issues:"; cat /tmp/helgrind.log; \
 	else \

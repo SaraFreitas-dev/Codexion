@@ -22,7 +22,7 @@ static bool	coder_is_in_burnout(t_simulation *simul, t_coder *coder)
 	last_compile = coder->last_compile_start_ms;
 	pthread_mutex_unlock(&coder->time_lock);
 	time_since_last_compile = get_time_ms() - last_compile;
-	return (time_since_last_compile > simul->time_to_burnout);
+	return (time_since_last_compile >= simul->time_to_burnout);
 }
 
 // Check if the coder has reached the number of compiles required

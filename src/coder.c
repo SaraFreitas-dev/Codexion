@@ -44,29 +44,26 @@ static bool	compile_phase(t_simulation *simul, t_coder *coder)
 }
 
 /*
-Each coder loops compile->debug->refactor until told to stop.
-should_stop is shared, so it's read into a local copy while
-holding stop_lock — the lock is released immediately after,
-before running the (long) phases, so other coders aren't blocked.
+Each coder loops through compile -> debug -> refactor until the
+simulation is stopped. should_stop_now() safely reads the shared
+stop flag using stop_lock before starting the next phase.
 */
 void	*coder_routine(void *arg)
 {
 	t_coder			*coder;
 	t_simulation	*simul;
-	bool			to_stop;
 
-	coder = (t_coder *) arg;
+	coder = (t_coder *)arg;
 	simul = coder->simul;
-	while (1)
+	while (!should_stop_now(simul))
 	{
-		pthread_mutex_lock(&simul->stop_lock);
-		to_stop = simul->should_stop;
-		pthread_mutex_unlock(&simul->stop_lock);
-		if (to_stop)
-			break ;
 		if (!compile_phase(simul, coder))
 			break ;
+		if (should_stop_now(simul))
+			break ;
 		sleep_phase(simul, coder, DEBUGGING, simul->time_to_debug);
+		if (should_stop_now(simul))
+			break ;
 		sleep_phase(simul, coder, REFACTORING, simul->time_to_refactor);
 	}
 	return (NULL);

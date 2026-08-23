@@ -12,16 +12,6 @@
 
 #include "codexion.h"
 
-static bool	should_stop_now(t_simulation *simul)
-{
-	bool	result;
-
-	pthread_mutex_lock(&simul->stop_lock);
-	result = simul->should_stop;
-	pthread_mutex_unlock(&simul->stop_lock);
-	return (result);
-}
-
 /*
 Try to acquire a single dongle: waits (via cond_wait) until the
 dongle is available, its cooldown has passed, AND this coder is
@@ -70,9 +60,11 @@ bool	take_both_dongles(t_simulation *simul, t_coder *coder)
 	if (coder->left_dongle == coder->right_dongle)
 	{
 		try_take_dongle(simul, coder->left_dongle, coder);
-		return (!should_stop_now(simul));
+		while (!should_stop_now(simul))
+			usleep(1000);
+		return (false);
 	}
-	if ((coder->left_dongle->dongle_id) < (coder->right_dongle->dongle_id))
+	if (coder->left_dongle->dongle_id < coder->right_dongle->dongle_id)
 	{
 		first_place = coder->left_dongle;
 		second_place = coder->right_dongle;
@@ -86,9 +78,7 @@ bool	take_both_dongles(t_simulation *simul, t_coder *coder)
 	if (should_stop_now(simul))
 		return (false);
 	try_take_dongle(simul, second_place, coder);
-	if (should_stop_now(simul))
-		return (false);
-	return (true);
+	return (!should_stop_now(simul));
 }
 
 /*

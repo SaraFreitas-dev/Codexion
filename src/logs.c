@@ -69,6 +69,10 @@ void	print_log(t_simulation *simul, t_coder *coder, t_event event)
 		return ;
 	}
 	pthread_mutex_lock(&simul->log_lock);
-	printf("%ld %d %s\n", timestamp_in_ms, coder_id, event_type);
+	if (USE_COLOR && event == BURNED_OUT)
+		printf("\033[31m%ld %d %s\033[0m\n",
+			timestamp_in_ms, coder_id, event_type);
+	else
+		printf("%ld %d %s\n", timestamp_in_ms, coder_id, event_type);
 	pthread_mutex_unlock(&simul->log_lock);
 }

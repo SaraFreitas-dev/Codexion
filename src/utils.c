@@ -34,9 +34,15 @@ The smaller value always wins priority in both modes.
 long	calculate_priority(t_simulation *simul, t_coder *coder)
 {
 	long	priority_ms;
+	long	last_compile;
 
 	if (strcmp(simul->scheduler, "edf") == 0)
-		priority_ms = coder->last_compile_start_ms + simul->time_to_burnout;
+	{
+		pthread_mutex_lock(&coder->time_lock);
+		last_compile = coder->last_compile_start_ms;
+		pthread_mutex_unlock(&coder->time_lock);
+		priority_ms = last_compile + simul->time_to_burnout;
+	}
 	else
 		priority_ms = get_time_ms();
 	return (priority_ms);
@@ -50,6 +56,21 @@ void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
 	deadline_ms = dongle->released_at_ms + cooldown;
 	ts->tv_sec = deadline_ms / 1000;
 	ts->tv_nsec = deadline_ms % 1000 * 1000000;
+}
+
+/*
+Safely checks whether the simulation has been told to stop.
+Uses stop_lock so the shared should_stop flag can be read without
+racing with the monitor thread that may update it.
+*/
+bool	should_stop_now(t_simulation *simul)
+{
+	bool	result;
+
+	pthread_mutex_lock(&simul->stop_lock);
+	result = simul->should_stop;
+	pthread_mutex_unlock(&simul->stop_lock);
+	return (result);
 }
 
 // To swap the data nodes in the heap struct
