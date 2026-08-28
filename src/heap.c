@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/13 22:06:24 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 23:25:19 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/29 00:25:28 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,12 @@ static int	get_smaller_child(t_heap *heap, int i, t_simulation *simul)
 	right_i = 2 * i + 2;
 	smaller_i = i;
 	if (left_i < heap->size
-		&& is_higher_priority(simul, heap->data[left_i], heap->data[smaller_i]))
+		&& is_higher_priority(simul, heap->data[left_i],
+			heap->data[smaller_i]))
 		smaller_i = left_i;
 	if (right_i < heap->size
-		&& is_higher_priority(simul, heap->data[right_i], heap->data[smaller_i]))
+		&& is_higher_priority(simul, heap->data[right_i],
+			heap->data[smaller_i]))
 		smaller_i = right_i;
 	return (smaller_i);
 }

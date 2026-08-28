@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/28 23:14:36 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 23:22:09 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/29 00:28:53 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ bool	is_higher_priority(t_simulation *simul, t_coder *a, t_coder *b)
 	if (a->priority_ms < b->priority_ms)
 		return (true);
 	if (a->priority_ms == b->priority_ms)
-		return (priority_tie_breaker(simul, a) < priority_tie_breaker(simul, b));
+		return (priority_tie_breaker(simul, a)
+			< priority_tie_breaker(simul, b));
 	return (false);
 }

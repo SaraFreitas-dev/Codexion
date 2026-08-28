@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 23:35:45 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 22:38:39 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/29 00:25:42 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void	cleanup_simulation(t_simulation *simul)
 	}
 	pthread_mutex_destroy(&simul->log_lock);
 	pthread_mutex_destroy(&simul->stop_lock);
-	pthread_mutex_destroy(&simul->request_lock); 
+	pthread_mutex_destroy(&simul->request_lock);
 	free(simul->dongles);
 	free(simul->coders);
 }

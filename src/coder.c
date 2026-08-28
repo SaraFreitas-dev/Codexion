@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/20 21:02:34 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 22:49:36 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/29 00:33:27 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 /*
 Lock the request_counter to increase its value
-When a coder requests a dongle ("priority wqiting list")
+When a coder requests a dongle ("priority waiting list")
 */
 void	assign_request_order(t_simulation *simul, t_coder *coder)
 {

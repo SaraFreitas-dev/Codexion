@@ -6,14 +6,14 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 22:31:26 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 23:25:28 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/29 00:31:50 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 
-# define USE_COLOR 1
+# define USE_COLOR 0
 
 # include <stdbool.h>
 # include <pthread.h>
