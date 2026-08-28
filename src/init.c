@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/06 23:35:45 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/06 23:35:45 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 22:38:39 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ int	init_simulation(t_simulation *simul, char **args)
 	simul->scheduler = args[8];
 	simul->start_time_ms = get_time_ms();
 	simul->should_stop = false;
+	simul->request_counter = 0;
 	if (init_dongles(simul) == 1)
 		return (1);
 	if (init_coders(simul) == 1)
@@ -122,6 +123,8 @@ int	init_simulation(t_simulation *simul, char **args)
 	if (pthread_mutex_init(&simul->log_lock, NULL) != 0)
 		return (1);
 	if (pthread_mutex_init(&simul->stop_lock, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&simul->request_lock, NULL) != 0)
 		return (1);
 	return (0);
 }
@@ -143,6 +146,7 @@ void	cleanup_simulation(t_simulation *simul)
 	}
 	pthread_mutex_destroy(&simul->log_lock);
 	pthread_mutex_destroy(&simul->stop_lock);
+	pthread_mutex_destroy(&simul->request_lock); 
 	free(simul->dongles);
 	free(simul->coders);
 }

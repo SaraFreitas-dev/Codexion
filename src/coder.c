@@ -6,11 +6,23 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/20 21:02:34 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/20 21:02:34 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 22:49:36 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+/*
+Lock the request_counter to increase its value
+When a coder requests a dongle ("priority wqiting list")
+*/
+void	assign_request_order(t_simulation *simul, t_coder *coder)
+{
+	pthread_mutex_lock(&simul->request_lock);
+	simul->request_counter++;
+	coder->request_order = simul->request_counter;
+	pthread_mutex_unlock(&simul->request_lock);
+}
 
 /*
 Prints the log from the current event (	DEBUGGING or REFACTORING).

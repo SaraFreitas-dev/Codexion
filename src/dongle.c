@@ -6,13 +6,13 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/16 11:11:12 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/16 11:11:12 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 22:51:18 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
+static void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
 	struct timespec *ts)
 {
 	long	deadline_ms;
@@ -36,6 +36,7 @@ static void	try_take_dongle(t_simulation *simul,
 
 	pthread_mutex_lock(&dongle->lock);
 	coder->priority_ms = calculate_priority(simul, coder);
+	assign_request_order(simul, coder);
 	remaining_cooldown_t = get_time_ms() - dongle->released_at_ms;
 	min_heap_push(simul, &dongle->heap, coder);
 	while ((!dongle->is_available

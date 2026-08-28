@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 22:31:26 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/03 22:31:26 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 22:49:58 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,13 @@ typedef struct simulation
 	int					time_to_refactor;
 	int					number_of_compiles_required;
 	int					dongle_cooldown;
+	int					request_counter; // Global source for request_order
 	char				*scheduler;
 	long				start_time_ms;
 	bool				should_stop; // Shared flag
 	t_dongle			*dongles;
 	t_coder				*coders;
+	pthread_mutex_t		request_lock; // Protects request_counter
 	pthread_mutex_t		stop_lock; // Protects the should_stop bool flag
 	pthread_mutex_t		log_lock; // Protects the printf inside print_log
 }	t_simulation;
@@ -107,6 +109,7 @@ bool	take_both_dongles(t_simulation *simul, t_coder *coder);
 void	release_both_dongle(t_coder *coder);
 
 //_____________________CODER.C______________________
+void	assign_request_order(t_simulation *simul, t_coder *coder);
 void	*coder_routine(void *arg);
 
 //____________________MONITOR.C______________________
