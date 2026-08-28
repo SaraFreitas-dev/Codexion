@@ -6,7 +6,7 @@
 #    By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/08/03 22:08:59 by sarfreit          #+#    #+#              #
-#    Updated: 2026/08/03 22:08:59 by sarfreit         ###   ########.fr        #
+#    Updated: 2026/08/28 23:15:30 by sarfreit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,7 @@ SRCS    := src/main.c \
 		   src/dongle.c \
 		   src/coder.c \
 		   src/monitor.c \
+		   src/scheduler_utils.c \
 
 OBJS    := $(SRCS:.c=.o)
 

@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/13 22:06:24 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/13 22:06:24 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 23:25:19 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,17 @@ until the min-heap property holds again.
 When it's used: right after a new element is added at the very
 bottom (end) of the array — it needs to travel up to its correct spot.
 */
-static void	sift_up(t_heap *heap, int i)
+static void	sift_up(t_heap *heap, int i, t_simulation *simul)
 {
-	int				parent_i;
-	long			parent_priority;
-	long			curr_priority;
+	int	parent_i;
 
 	while (i > 0)
 	{
 		parent_i = (i - 1) / 2;
-		curr_priority = heap->data[i]->priority_ms;
-		parent_priority = heap->data[parent_i]->priority_ms;
-		if (curr_priority >= parent_priority)
+		if (!is_higher_priority(simul, heap->data[i], heap->data[parent_i]))
 			return ;
-		else
-		{
-			ft_swap(&heap->data[i], &heap->data[parent_i]);
-			i = parent_i;
-		}
+		ft_swap(&heap->data[i], &heap->data[parent_i]);
+		i = parent_i;
 	}
 }
 
@@ -47,36 +40,31 @@ moving the last leaf into its place — that displaced element
 needs to sink down to where it actually belongs.
 - get_smaller_child: assistant to the sift_down function
 */
-static int	get_smaller_child(t_heap *heap, int i)
+static int	get_smaller_child(t_heap *heap, int i, t_simulation *simul)
 {
 	int		smaller_i;
 	int		left_i;
 	int		right_i;
-	long	smaller_priority;
 
 	left_i = 2 * i + 1;
 	right_i = 2 * i + 2;
 	smaller_i = i;
-	smaller_priority = heap->data[smaller_i]->priority_ms;
 	if (left_i < heap->size
-		&& heap->data[left_i]->priority_ms < smaller_priority)
-	{
+		&& is_higher_priority(simul, heap->data[left_i], heap->data[smaller_i]))
 		smaller_i = left_i;
-		smaller_priority = heap->data[left_i]->priority_ms;
-	}
 	if (right_i < heap->size
-		&& heap->data[right_i]->priority_ms < smaller_priority)
+		&& is_higher_priority(simul, heap->data[right_i], heap->data[smaller_i]))
 		smaller_i = right_i;
 	return (smaller_i);
 }
 
-static void	sift_down(t_heap *heap, int i)
+static void	sift_down(t_heap *heap, int i, t_simulation *simul)
 {
 	int				smaller_i;
 
 	while (1)
 	{
-		smaller_i = get_smaller_child(heap, i);
+		smaller_i = get_smaller_child(heap, i, simul);
 		if (smaller_i == i)
 			return ;
 		ft_swap(&heap->data[i], &heap->data[smaller_i]);
@@ -97,7 +85,7 @@ int	min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder)
 	}
 	heap->data[heap->size] = new_coder;
 	heap->size++;
-	sift_up(heap, heap->size - 1);
+	sift_up(heap, heap->size - 1, simul);
 	return (0);
 }
 
@@ -107,7 +95,7 @@ The one to return is always the first one in the array since
 its already sorted.
 pop calls sift_down (root replacement sinks to its correct spot).
 */
-t_coder	*min_heap_pop(t_heap *heap)
+t_coder	*min_heap_pop(t_heap *heap, t_simulation *simul)
 {
 	t_coder	*last_element;
 	t_coder	*first_element;
@@ -121,6 +109,6 @@ t_coder	*min_heap_pop(t_heap *heap)
 	first_element = heap->data[0];
 	heap->data[0] = last_element;
 	heap->size--;
-	sift_down(heap, 0);
+	sift_down(heap, 0, simul);
 	return (first_element);
 }

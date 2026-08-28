@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/03 22:31:26 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 22:49:58 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 23:25:28 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,15 +94,18 @@ void	cleanup_simulation(t_simulation *simul);
 void	print_log(t_simulation *simul, t_coder *coder, t_event event);
 
 //_____________________UTILS.C______________________
-long	get_time_ms(void);
-long	calculate_priority(t_simulation *simul, t_coder *coder);
 void	ft_swap(t_coder **a, t_coder **b);
 bool	should_stop_now(t_simulation *simul);
+
+//________________SCHEDULER_UTILS.C_________________
+long	get_time_ms(void);
+long	calculate_priority(t_simulation *simul, t_coder *coder);
 long	priority_tie_breaker(t_simulation *simul, t_coder *coder);
+bool	is_higher_priority(t_simulation *simul, t_coder *a, t_coder *b);
 
 //______________________HEAP.C______________________
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);
-t_coder	*min_heap_pop(t_heap *heap);
+t_coder	*min_heap_pop(t_heap *heap, t_simulation *simul);
 
 //_____________________DONGLE.C_____________________
 bool	take_both_dongles(t_simulation *simul, t_coder *coder);

@@ -6,7 +6,7 @@
 /*   By: sarfreit <sarfreit@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/16 11:11:12 by sarfreit          #+#    #+#             */
-/*   Updated: 2026/08/28 22:51:18 by sarfreit         ###   ########.fr       */
+/*   Updated: 2026/08/28 23:30:01 by sarfreit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static void	try_take_dongle(t_simulation *simul,
 	}
 	dongle->is_available = false;
 	print_log(simul, coder, DONGLE_TAKEN);
-	min_heap_pop(&dongle->heap);
+	min_heap_pop(&dongle->heap, simul);
 	pthread_mutex_unlock(&dongle->lock);
 }
 
