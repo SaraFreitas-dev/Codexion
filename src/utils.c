@@ -48,14 +48,16 @@ long	calculate_priority(t_simulation *simul, t_coder *coder)
 	return (priority_ms);
 }
 
-void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
-	struct timespec *ts)
+/*
+Resolve equal priorities between two coders.
+EDF: the coder with the lowest coder_id wins.
+FIFO: the coder with the lowest request_order wins.
+*/
+long	priority_tie_breaker(t_simulation *simul, t_coder *coder)
 {
-	long	deadline_ms;
-
-	deadline_ms = dongle->released_at_ms + cooldown;
-	ts->tv_sec = deadline_ms / 1000;
-	ts->tv_nsec = deadline_ms % 1000 * 1000000;
+	if (strcmp(simul->scheduler, "edf") == 0)
+		return (coder->coder_id);
+	return (coder->request_order);
 }
 
 /*

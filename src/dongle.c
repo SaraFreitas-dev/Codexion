@@ -12,6 +12,16 @@
 
 #include "codexion.h"
 
+void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
+	struct timespec *ts)
+{
+	long	deadline_ms;
+
+	deadline_ms = dongle->released_at_ms + cooldown;
+	ts->tv_sec = deadline_ms / 1000;
+	ts->tv_nsec = deadline_ms % 1000 * 1000000;
+}
+
 /*
 Try to acquire a single dongle: waits (via cond_wait) until the
 dongle is available, its cooldown has passed, AND this coder is

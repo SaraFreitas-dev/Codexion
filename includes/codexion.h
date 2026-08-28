@@ -43,6 +43,7 @@ typedef struct coder
 {
 	int					coder_id;
 	long				priority_ms;
+	int					request_order; // FIFO arrival order, tie breaker
 	int					times_compiled;
 	long				last_compile_start_ms; // For burnout and deadline (EDF)
 	t_dongle			*left_dongle;
@@ -94,9 +95,8 @@ void	print_log(t_simulation *simul, t_coder *coder, t_event event);
 long	get_time_ms(void);
 long	calculate_priority(t_simulation *simul, t_coder *coder);
 void	ft_swap(t_coder **a, t_coder **b);
-void	get_cooldown_deadline(t_dongle *dongle, int cooldown,
-			struct timespec *ts);
 bool	should_stop_now(t_simulation *simul);
+long	priority_tie_breaker(t_simulation *simul, t_coder *coder);
 
 //______________________HEAP.C______________________
 int		min_heap_push(t_simulation *simul, t_heap *heap, t_coder *new_coder);
