@@ -15,6 +15,8 @@ contention**.
 
 **Codexion mapping:** coder → philosopher, dongle → fork, compile → eat, burnout → starve.
 
+![Dining philosophers problem visualized](./dining_philosophers_visualized.png)
+
 ## ⚠️ The core problem
 
 If every philosopher picks up their **left** fork at the same time, all of them will
@@ -25,6 +27,8 @@ anything. This is a **deadlock**.
 
 A deadlock can only occur if **all four** of these hold simultaneously. Breaking
 **any one** of them prevents deadlock entirely.
+
+![Coffman's four conditions applied to Codexion](./coffmans_conditions.png)
 
 | # | Condition | Meaning | Example in Codexion |
 |---|---|---|---|
