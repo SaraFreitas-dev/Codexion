@@ -13,7 +13,7 @@
 #ifndef CODEXION_H
 # define CODEXION_H
 
-# define USE_COLOR 0
+# define USE_COLOR 1
 
 # include <stdbool.h>
 # include <pthread.h>

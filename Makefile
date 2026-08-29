@@ -47,10 +47,6 @@ $(NAME): $(OBJS)
 # Tester (Not mandatory, this tests the norms and leeks on the project)
 # --------------------------------------------------------------------------- #
 
-# --------------------------------------------------------------------------- #
-# Tester (Not mandatory, this tests the norms and leeks on the project)
-# --------------------------------------------------------------------------- #
-
 ARGS_MULTI_STABLE := 5 1500 200 200 200 3 100 fifo
 ARGS_SINGLE_BURNOUT := 1 800 200 200 200 2 100 fifo
 
